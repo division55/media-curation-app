@@ -175,8 +175,4 @@ app.get("/test-ai", async (req, res) => {
 });
 
 
-// 🚀 START
-app.listen(5000, () => {
-  console.log("🚀 Gemini server running on http://localhost:5000");
-});
-
+module.exports = app;
