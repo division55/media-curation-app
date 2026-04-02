@@ -13,6 +13,15 @@ const News = () => {
   const [loadingAI, setLoadingAI] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement | null>(null);
+  const aiApiBase =
+    import.meta.env.VITE_AI_API_BASE_URL ||
+    import.meta.env.VITE_API_BASE_URL ||
+    "";
+  const aiChatUrl = aiApiBase
+    ? `${aiApiBase.replace(/\/$/, "")}/chat`
+    : import.meta.env.DEV
+      ? "http://localhost:5000/chat"
+      : "/api/chat";
 
   // 📰 FETCH NEWS
   useEffect(() => {
@@ -54,7 +63,7 @@ Content: ${selectedNews?.content || ""}
 Source: ${selectedNews?.source_id || ""}
 `;
 
-      const res = await fetch("http://localhost:5000/chat", {
+      const res = await fetch(aiChatUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,6 +73,11 @@ Source: ${selectedNews?.source_id || ""}
           context,
         }),
       });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || `AI request failed (${res.status})`);
+      }
 
       const data = await res.json();
       console.log("AI RESPONSE:", data);
