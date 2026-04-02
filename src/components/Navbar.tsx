@@ -36,20 +36,20 @@ export function Navbar() {
     { label: 'Movies', path: '/library/movies' },
     { label: 'Songs', path: '/library/songs' },
     { label: 'Diary', path: '/library/diary' },
-    { label: 'News', path: '/news' }, // ✅ NEW
+    { label: 'News', path: '/news' }, // NEW
     { label: 'Profile', path: '/profile' },
   ];
 
   // ✅ UPDATED ACTIVE LOGIC (News added)
   const activeIndex = links.findIndex(link =>
     location.pathname === link.path ||
-    (link.path === '/resources' && location.pathname.startsWith('/resources')) ||
     (link.path === '/news' && location.pathname.startsWith('/news')) || // ✅ NEW
     (link.path.includes('books') && location.pathname.startsWith('/book/')) ||
     (link.path.includes('movies') && location.pathname.startsWith('/movie/')) ||
     (link.path.includes('songs') && location.pathname.startsWith('/library/songs')) ||
     (link.path.includes('diary') && location.pathname.startsWith('/library/diary'))
   );
+  const isResourcesActive = location.pathname.startsWith('/resources');
 
   useEffect(() => {
     const activeEl = linkRefs.current[activeIndex];
@@ -90,6 +90,7 @@ export function Navbar() {
 
           {links.map((link, i) => {
             const isActive = i === activeIndex;
+            const Icon = link.icon;
             return (
               <Link
                 key={link.label}
@@ -97,11 +98,14 @@ export function Navbar() {
                 ref={el => {
                   linkRefs.current[i] = el;
                 }}
-                className={`text-[11px] font-semibold uppercase tracking-[0.25em] md:tracking-[0.35em] transition-colors ${
+                className={`inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.25em] md:tracking-[0.35em] transition-colors ${
                   isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
+                title={link.iconOnly ? link.label : undefined}
+                aria-label={link.iconOnly ? link.label : undefined}
               >
-                {link.label}
+                {Icon ? <Icon className="h-4 w-4" /> : null}
+                {link.iconOnly ? <span className="sr-only">{link.label}</span> : link.label}
               </Link>
             );
           })}
@@ -126,9 +130,22 @@ export function Navbar() {
           >
             {isLoggingOut ? 'Logging out...' : 'Log out'}
           </button>
+
+          <Link
+            to="/resources"
+            className={`inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.25em] md:tracking-[0.35em] transition-colors ${
+              isResourcesActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+            }`}
+            title="Resources"
+            aria-label="Resources"
+          >
+            <MapPin className="h-4 w-4" />
+            <span className="sr-only">Resources</span>
+          </Link>
         </nav>
       </div>
     </header>
   );
 }
+
 
