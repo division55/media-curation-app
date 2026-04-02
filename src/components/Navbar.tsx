@@ -1,8 +1,8 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MapPin, Search } from 'lucide-react';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
-
 
 export function Navbar() {
   const location = useLocation();
@@ -30,16 +30,21 @@ export function Navbar() {
     }
   };
 
+  // ✅ UPDATED LINKS (News added)
   const links = [
     { label: 'Books', path: '/library/books' },
     { label: 'Movies', path: '/library/movies' },
     { label: 'Songs', path: '/library/songs' },
     { label: 'Diary', path: '/library/diary' },
+    { label: 'News', path: '/news' }, // ✅ NEW
     { label: 'Profile', path: '/profile' },
   ];
 
+  // ✅ UPDATED ACTIVE LOGIC (News added)
   const activeIndex = links.findIndex(link =>
     location.pathname === link.path ||
+    (link.path === '/resources' && location.pathname.startsWith('/resources')) ||
+    (link.path === '/news' && location.pathname.startsWith('/news')) || // ✅ NEW
     (link.path.includes('books') && location.pathname.startsWith('/book/')) ||
     (link.path.includes('movies') && location.pathname.startsWith('/movie/')) ||
     (link.path.includes('songs') && location.pathname.startsWith('/library/songs')) ||
@@ -77,7 +82,8 @@ export function Navbar() {
               style={{
                 left: indicatorStyle.left,
                 width: indicatorStyle.width,
-                transition: 'left 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
+                transition:
+                  'left 0.3s cubic-bezier(0.25, 1, 0.5, 1), width 0.3s cubic-bezier(0.25, 1, 0.5, 1)',
               }}
             />
           )}
@@ -88,7 +94,9 @@ export function Navbar() {
               <Link
                 key={link.label}
                 to={link.path}
-                ref={el => { linkRefs.current[i] = el; }}
+                ref={el => {
+                  linkRefs.current[i] = el;
+                }}
                 className={`text-[11px] font-semibold uppercase tracking-[0.25em] md:tracking-[0.35em] transition-colors ${
                   isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
                 }`}
@@ -109,14 +117,7 @@ export function Navbar() {
               {isMac ? 'Cmd+K' : 'Ctrl+K'}
             </span>
           </button>
-          <Link
-            to="/resources"
-            className="inline-flex items-center justify-center border border-border px-2.5 py-2 text-muted-foreground transition-colors hover:text-foreground"
-            aria-label="Resources"
-            title="Resources"
-          >
-            <MapPin className="h-3.5 w-3.5" />
-          </Link>
+
           <button
             type="button"
             onClick={handleLogout}
@@ -130,3 +131,4 @@ export function Navbar() {
     </header>
   );
 }
+
